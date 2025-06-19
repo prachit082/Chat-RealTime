@@ -90,12 +90,18 @@ func main() {
 	router.HandleFunc("/", home)
 	router.HandleFunc("/chat", chat)
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000" // fallback for local dev
+	}
+
 	server := &http.Server{
-		Addr:        "localhost:8000",
+		Addr:        ":" + port, // listen on all interfaces
 		Handler:     router,
 		ReadTimeout: readtimeout,
 	}
 
+	log.Println("Server running on port", port)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
