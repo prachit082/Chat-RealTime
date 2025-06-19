@@ -101,7 +101,7 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr:        ":" + port, // listen on all interfaces
+		Addr:        "0.0.0.0:" + port, // listen on all interfaces
 		Handler:     router,
 		ReadTimeout: readtimeout,
 	}
