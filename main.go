@@ -19,6 +19,7 @@ var connectedClients = make(Clients)
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  100,
 	WriteBufferSize: 100,
+	CheckOrigin:     func(r *http.Request) bool { return true }, // Allow all origins
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +97,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8000" // fallback for local dev
+		port = "8080" // fallback for local dev
 	}
 
 	server := &http.Server{
