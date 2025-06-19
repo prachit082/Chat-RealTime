@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime Chat</title>
+    <style>
+        * {
+            margin: 4px;
+        }
+
+        #message-container {
+            background-color: #ddd;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 80vh;
+            width: 600px;
+        }
+
+        #message-container input {
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #message-container #send-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Messages</h1>
+        <div id="message-container">
+            <div id="messages"></div>
+            <div id="send-field">
+                <input id="message" type="text" placeholder="hello..." />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const body = document.body;
+        var socket = null
+        const messages = document.querySelector('#messages');
+
+        window.addEventListener('keyup', (event) => {
+            // on enter
+            if (event.keyCode == 0x0D) {
+                sendMessage()
+            }
+        })
+
+        function isWebSocketsAvailable() {
+            if (window.WebSocket == undefined) return false
+            else return true
+        }
+        
+        function createConnection() {
+            if (!isWebSocketsAvailable()) {
+                alert("Your browser doesn't support websockets.")
+                return
+            }
+
+            socket = new WebSocket('ws://localhost:8000/chat');
+
+            socket.onmessage = ({ data }) => {
+                console.log(data);
+                messages.appendChild(newMessageElement(data))
+            }
+
+            socket.onerror = error => {
+                console.log(error.message)
+            }
+
+            socket.onopen = (event) => {
+                console.log('connection now, is established.');
+                var nick = prompt("Please, enter your nick name")
+                socket.send(nick)
+            }
+        }
+
+        function sendMessage() {
+            let message = document.getElementById('message').value;
+            console.log(`sending message: ${message}`)
+            socket ? socket.send(message) : alert('Not connected to the server.');
+            document.getElementById('message').value = ''
+            
+        }
+
+        function newMessageElement(message) {
+            let p = document.createElement('p')
+            p.innerText = message;
+            return p;
+        }
+
+        createConnection()
+    </script>
+</body>
+</html>
