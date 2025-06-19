@@ -90,6 +90,10 @@ func main() {
 	router.HandleFunc("/", home)
 	router.HandleFunc("/chat", chat)
 
+	// Serve static files (like public/chat.html)
+	fs := http.FileServer(http.Dir("./public"))
+	router.PathPrefix("/").Handler(fs)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8000" // fallback for local dev

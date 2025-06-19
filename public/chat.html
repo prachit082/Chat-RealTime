@@ -161,7 +161,9 @@
         return;
       }
 
-      socket = new WebSocket('ws://localhost:8000/chat');
+      const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+      const host = location.host;
+      socket = new WebSocket(protocol + host + '/chat');
 
       socket.onmessage = ({ data }) => {
         messages.appendChild(newMessageElement(data));
